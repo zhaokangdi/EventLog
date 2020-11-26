@@ -12,10 +12,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tinyxml2.h" />
+    <ClInclude Include="xmlParse.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
+    <ClCompile Include="xmlParse.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D4110CF4-FE6C-4A37-9D0A-2A0793DC3CDE}</ProjectGuid>
