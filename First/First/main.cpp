@@ -1,11 +1,14 @@
+#include "stringConversion.h"
+#include "xmlParse.h"
+#include "eventLog.h"
+#include <string>
+
 void main()
 {
-	int b = 0;
-	int c = 0;
+	setlocale(LC_ALL, "chs");
 
-	int d = 0;
-	int f = 0;
-	int g = 0;
-	int j = 0;
+	eventLog eventLogs;
+	eventLogs.GetDifferentType(L"SetUp");
 
+	system("pause");
 }
