@@ -27,6 +27,57 @@
     <ClInclude Include="xmlParse.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="assertions.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="autolink.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsolePrintObserver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="evnetLog.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="features.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="forwards.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="json.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="jsonCollect.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Observer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="reader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Secretary.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Subject.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="value.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="version.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="WriteFileObserver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="writer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tinyxml2.cpp">
@@ -44,5 +95,28 @@
     <ClCompile Include="xmlParse.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ConsolePrintObserver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="jsonCollect.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Observer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Secretary.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="WriteFileObserver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib_json.lib">
+      <Filter>头文件</Filter>
+    </Library>
+    <Library Include="lib_json_x64.lib">
+      <Filter>头文件</Filter>
+    </Library>
   </ItemGroup>
 </Project>

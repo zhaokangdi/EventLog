@@ -11,17 +11,43 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="assertions.h" />
+    <ClInclude Include="autolink.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="ConsolePrintObserver.h" />
     <ClInclude Include="eventLog.h" />
+    <ClInclude Include="evnetLog.h" />
+    <ClInclude Include="features.h" />
+    <ClInclude Include="forwards.h" />
+    <ClInclude Include="json.h" />
+    <ClInclude Include="jsonCollect.h" />
+    <ClInclude Include="Observer.h" />
+    <ClInclude Include="reader.h" />
+    <ClInclude Include="Secretary.h" />
     <ClInclude Include="stringConversion.h" />
+    <ClInclude Include="Subject.h" />
     <ClInclude Include="tinyxml2.h" />
+    <ClInclude Include="value.h" />
+    <ClInclude Include="version.h" />
+    <ClInclude Include="WriteFileObserver.h" />
+    <ClInclude Include="writer.h" />
     <ClInclude Include="xmlParse.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ConsolePrintObserver.cpp" />
     <ClCompile Include="eventLog.cpp" />
+    <ClCompile Include="jsonCollect.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Observer.cpp" />
+    <ClCompile Include="Secretary.cpp" />
     <ClCompile Include="stringConversion.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
+    <ClCompile Include="WriteFileObserver.cpp" />
     <ClCompile Include="xmlParse.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib_json.lib" />
+    <Library Include="lib_json_x64.lib" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D4110CF4-FE6C-4A37-9D0A-2A0793DC3CDE}</ProjectGuid>
@@ -65,10 +91,11 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

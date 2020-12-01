@@ -1,14 +1,26 @@
 #include "stringConversion.h"
-#include "xmlParse.h"
-#include "eventLog.h"
-#include <string>
+#include "jsonCollect.h"
+#include "Subject.h"
+#include "Secretary.h"
+#include "Observer.h"
+#include "WriteFileObserver.h"
+#include "ConsolePrintObserver.h"
 
 void main()
 {
-	setlocale(LC_ALL, "chs");
+	jsonCollect jsonCollection;
+	Subject *pSubject = new Secretary(); //创建观察者
 
-	eventLog eventLogs;
-	eventLogs.GetDifferentType(L"SetUp");
+	//被观察的对象
+	Observer *pWriteFile = new WriteFileObserver(pSubject);
+	Observer *pConsolePrint = new ConsolePrintObserver(pSubject);
+
+	//加入观察队列
+	pSubject->attach(pWriteFile);
+	pSubject->attach(pConsolePrint);
+
+	pSubject->sJsonInfo = jsonCollection.getAllTypeJson();
+	pSubject->notify();
 
 	system("pause");
 }
