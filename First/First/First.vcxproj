@@ -15,12 +15,10 @@
     <ClInclude Include="autolink.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="ConsolePrintObserver.h" />
-    <ClInclude Include="eventLog.h" />
     <ClInclude Include="evnetLog.h" />
     <ClInclude Include="features.h" />
     <ClInclude Include="forwards.h" />
     <ClInclude Include="json.h" />
-    <ClInclude Include="jsonCollect.h" />
     <ClInclude Include="Observer.h" />
     <ClInclude Include="reader.h" />
     <ClInclude Include="Secretary.h" />
@@ -36,9 +34,7 @@
   <ItemGroup>
     <ClCompile Include="ConsolePrintObserver.cpp" />
     <ClCompile Include="eventLog.cpp" />
-    <ClCompile Include="jsonCollect.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Observer.cpp" />
     <ClCompile Include="Secretary.cpp" />
     <ClCompile Include="stringConversion.cpp" />
     <ClCompile Include="tinyxml2.cpp" />

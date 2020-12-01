@@ -18,9 +18,6 @@
     <ClInclude Include="tinyxml2.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="eventLog.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="stringConversion.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -49,9 +46,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="json.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="jsonCollect.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Observer.h">
@@ -96,12 +90,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ConsolePrintObserver.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="jsonCollect.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Observer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Secretary.cpp">

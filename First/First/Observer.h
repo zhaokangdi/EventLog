@@ -1,17 +1,16 @@
 #ifndef OBSERVER_H
 #define OBSERVER_H
 
-#include "Subject.h"
-
-class Subject;
+#include <string>
 
 class Observer
 {
 protected:
-	class Subject *pSub;
+	std::string sJsonInfo;
 
 public:
-	Observer(Subject *pSub);
+	virtual void setJson(std::string sJsonInfoSet) = 0;
+	virtual std::string getJson() = 0;
 	virtual void dealJson() = 0;
 };
 

@@ -2,15 +2,13 @@
 #define WRITEFILEOBSERVER_H
 
 #include "Observer.h"
-#include <list>
 #include <string>
-
-class Subject;
 
 class WriteFileObserver :public Observer
 {
 public:
-	WriteFileObserver(Subject *pSub);
+	void setJson(std::string sJsonInfoSet);
+	std::string getJson();
 	void dealJson();
 };
 

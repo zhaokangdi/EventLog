@@ -2,15 +2,13 @@
 #define CONSOLEPRINTOBSERVER_H
 
 #include "Observer.h"
-#include <list>
 #include <string>
-
-class Subject;
 
 class ConsolePrintObserver :public Observer
 {
 public:
-	ConsolePrintObserver(Subject *pSub);
+	void setJson(std::string sJsonInfoSet);
+	std::string getJson();
 	void dealJson();
 };
 

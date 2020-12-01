@@ -1,9 +1,16 @@
 #include "ConsolePrintObserver.h"
 #include <iostream>
 #include <Windows.h>
+#include <string>
 
-ConsolePrintObserver::ConsolePrintObserver(Subject *pSub) : Observer(pSub)
+void ConsolePrintObserver::setJson(std::string sJsonInfoSet)
 {
+	sJsonInfo = sJsonInfoSet;
+}
+
+std::string ConsolePrintObserver::getJson()
+{
+	return sJsonInfo;
 }
 
 void ConsolePrintObserver::dealJson()
@@ -13,7 +20,7 @@ void ConsolePrintObserver::dealJson()
 	FILE *pOutFile = NULL; //ÎÄ¼þÖ¸Õë
 	fopen_s(&pOutFile, "ConsolePrintObserver.txt", "w,ccs=UTF-8");
 
-	std::string sWriteFileInfo = pSub->sJsonInfo;
+	std::string sWriteFileInfo = getJson();
 	int iLen = 0;
 	int iLength = (int)sWriteFileInfo.length() + 1;
 	iLen = MultiByteToWideChar(CP_ACP, 0, sWriteFileInfo.c_str(), iLength, 0, 0);

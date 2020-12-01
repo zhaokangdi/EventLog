@@ -4,8 +4,14 @@
 #include <stdio.h>
 #include <string>
 
-WriteFileObserver::WriteFileObserver(Subject *pSub): Observer(pSub)
+void WriteFileObserver::setJson(std::string sJsonInfoSet)
 {
+	sJsonInfo = sJsonInfoSet;
+}
+
+std::string WriteFileObserver::getJson()
+{
+	return sJsonInfo;
 }
 
 void WriteFileObserver::dealJson()
@@ -15,7 +21,7 @@ void WriteFileObserver::dealJson()
 	FILE *pOutFile = NULL; //ÎÄ¼þÖ¸Õë
 	fopen_s(&pOutFile, "WriteFileObserver.txt", "w,ccs=UTF-8");
 
-	std::string sWriteFileInfo = pSub->sJsonInfo;
+	std::string sWriteFileInfo = getJson();
 	int iLen = 0;
 	int iLength = (int)sWriteFileInfo.length() + 1;
 	iLen = MultiByteToWideChar(CP_ACP, 0, sWriteFileInfo.c_str(), iLength, 0, 0);

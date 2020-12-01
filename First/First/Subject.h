@@ -5,8 +5,6 @@
 #include <list>
 #include <string>
 
-class Observer;
-
 class Subject
 {
 protected:

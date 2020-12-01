@@ -19,7 +19,7 @@ std::string stringConversion::ConvertLPWSTRToStr(LPWSTR pwszInput)
 	WideCharToMultiByte(CP_OEMCP, NULL, pwszInput, -1, pszStr, dwMinSize, NULL, FALSE);
 	sOutput = pszStr;
 	delete[] pszStr;
-	
+
 	return sOutput;
 }
 

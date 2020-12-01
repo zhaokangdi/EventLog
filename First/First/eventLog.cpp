@@ -92,7 +92,7 @@ std::vector<Json::Value> eventLog::GetDifferentType(LPWSTR pwszPath)
 			jsonValue["ProviderName"] = stringConvert.WStringToString(wsProvider.c_str());
 
 			//”√ªß£®UserID£©
-			std::wstring wsUserID = xmlInfo.GetXmlInfo(pwszXmlMessage, "USERID");			
+			std::wstring wsUserID = xmlInfo.GetXmlInfo(pwszXmlMessage, "USERID");
 			if (wsUserID != L"")
 			{
 				ConvertStringSidToSidW(wsUserID.c_str(), &pSid);
@@ -157,7 +157,7 @@ std::vector<Json::Value> eventLog::GetDifferentType(LPWSTR pwszPath)
 		{
 			EvtClose(hProviderNameMetadata);
 		}
-	
+
 		vecJsonInfos.push_back(jsonValue);
 	}
 
