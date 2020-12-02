@@ -22,24 +22,19 @@
     <ClInclude Include="Observer.h" />
     <ClInclude Include="reader.h" />
     <ClInclude Include="Secretary.h" />
-    <ClInclude Include="stringConversion.h" />
-    <ClInclude Include="Subject.h" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="value.h" />
     <ClInclude Include="version.h" />
     <ClInclude Include="WriteFileObserver.h" />
     <ClInclude Include="writer.h" />
-    <ClInclude Include="xmlParse.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConsolePrintObserver.cpp" />
     <ClCompile Include="eventLog.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Secretary.cpp" />
-    <ClCompile Include="stringConversion.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="WriteFileObserver.cpp" />
-    <ClCompile Include="xmlParse.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib_json.lib" />

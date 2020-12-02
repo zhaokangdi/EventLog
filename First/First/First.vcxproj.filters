@@ -18,12 +18,6 @@
     <ClInclude Include="tinyxml2.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="stringConversion.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="xmlParse.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="assertions.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -57,9 +51,6 @@
     <ClInclude Include="Secretary.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Subject.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="value.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -81,12 +72,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="eventLog.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="stringConversion.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="xmlParse.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ConsolePrintObserver.cpp">

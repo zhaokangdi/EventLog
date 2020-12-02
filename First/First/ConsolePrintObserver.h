@@ -7,7 +7,7 @@
 class ConsolePrintObserver :public Observer
 {
 public:
-	void setJson(std::string sJsonInfoSet);
+	void setJson(_In_ std::string &sJsonInfoSet);
 	void dealJson();
 };
 

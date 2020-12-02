@@ -5,12 +5,12 @@
 
 class Observer
 {
-protected:
-	std::string sJsonInfo;
-
 public:
-	virtual void setJson(std::string sJsonInfoSet) = 0;
+	virtual void setJson(_In_ std::string &sJsonInfoSet) = 0;
 	virtual void dealJson() = 0;
+
+protected:
+	std::string m_sJsonInfo;
 };
 
 #endif
