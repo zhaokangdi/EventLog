@@ -3,14 +3,11 @@
 #include <Windows.h>
 #include <string>
 
+#include "Secretary.h"
+
 void ConsolePrintObserver::setJson(std::string sJsonInfoSet)
 {
 	sJsonInfo = sJsonInfoSet;
-}
-
-std::string ConsolePrintObserver::getJson()
-{
-	return sJsonInfo;
 }
 
 void ConsolePrintObserver::dealJson()
@@ -20,7 +17,7 @@ void ConsolePrintObserver::dealJson()
 	FILE *pOutFile = NULL; //ÎÄ¼þÖ¸Õë
 	fopen_s(&pOutFile, "ConsolePrintObserver.txt", "w,ccs=UTF-8");
 
-	std::string sWriteFileInfo = getJson();
+	std::string sWriteFileInfo = sJsonInfo;
 	int iLen = 0;
 	int iLength = (int)sWriteFileInfo.length() + 1;
 	iLen = MultiByteToWideChar(CP_ACP, 0, sWriteFileInfo.c_str(), iLength, 0, 0);

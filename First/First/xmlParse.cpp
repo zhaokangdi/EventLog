@@ -6,7 +6,7 @@
 
 std::wstring xmlParse::GetXmlInfo(LPWSTR pwszMessage, std::string sInfoType)
 {
-	stringConversion strConvert;
+	stringConversion m_strConvert;
 
 	tinyxml2::XMLElement* attributeApproachRoot = NULL;
 	tinyxml2::XMLElement* attributeApproachElement = NULL;
@@ -15,7 +15,7 @@ std::wstring xmlParse::GetXmlInfo(LPWSTR pwszMessage, std::string sInfoType)
 	std::wstring wsResult = L" ";
 
 	//获取XML信息
-	std::string sTemp = strConvert.ConvertLPWSTRToStr(pwszMessage);
+	std::string sTemp = m_strConvert.ConvertLPWSTRToStr(pwszMessage);
 	pwszXml = sTemp.data();
 	tinyxml2::XMLDocument doc;
 	doc.Parse(pwszXml);
@@ -86,7 +86,7 @@ std::wstring xmlParse::GetXmlInfo(LPWSTR pwszMessage, std::string sInfoType)
 		std::cout << "Parse failure\n" << std::endl;
 	}
 
-	wsResult = strConvert.ConvertLPCWSTRToWStr(pwszInfo);
+	wsResult = m_strConvert.ConvertLPCWSTRToWStr(pwszInfo);
 
 	if (attributeApproachElement)
 	{

@@ -18,11 +18,10 @@
 
 #define MAX_NAME 256
 
-std::vector<Json::Value> eventLog::GetDifferentType(LPWSTR pwszPath)
+void eventLog::GetDifferentType(LPWSTR pwszPath, std::vector<Json::Value> &vecJsonInfo)
 {
-	stringConversion stringConvert;
-	xmlParse xmlInfo;
-	std::vector<Json::Value> vecJsonInfos;
+	stringConversion m_stringConvert;
+	xmlParse m_xmlInfo;
 
 	EVT_HANDLE hProviderMetadata = NULL;
 	EVT_HANDLE hResults = NULL;
@@ -30,7 +29,6 @@ std::vector<Json::Value> eventLog::GetDifferentType(LPWSTR pwszPath)
 	DWORD dwStatus = ERROR_SUCCESS;
 	DWORD dwReturned = 0;
 	LPWSTR pwszMessage = NULL;
-	LPWSTR pwszProviderName = NULL;
 
 	//查询Channel事件句柄
 	hResults = EvtQuery(NULL, pwszPath, NULL, EvtQueryChannelPath);
@@ -61,6 +59,10 @@ std::vector<Json::Value> eventLog::GetDifferentType(LPWSTR pwszPath)
 	{
 		Json::Value jsonValue;
 
+		LPWSTR pwszXmlMessage = NULL;
+		LPWSTR pwszProviderName = NULL;
+		std::wstring wsProvider = L"";
+
 		PSID pSid = NULL;
 		DWORD dwSize = MAX_NAME;
 		SID_NAME_USE SidType;
@@ -68,31 +70,31 @@ std::vector<Json::Value> eventLog::GetDifferentType(LPWSTR pwszPath)
 		char cUserName[MAX_NAME];
 		char cDomain[MAX_NAME];
 
-		LPWSTR pwszXmlMessage = NULL;
-		std::wstring wsTemp = GetProviderName(hProviderMetadata, hEvent);
-		const wchar_t* pwszTemp = wsTemp.c_str();
+		//XML
+		pwszXmlMessage = GetMessageString(hProviderMetadata, hEvent, EvtFormatMessageXml);
+		if (pwszXmlMessage)
+		{
+			//ProviderName
+			wsProvider = m_xmlInfo.GetXmlInfo(pwszXmlMessage, "PROVIDERNAME");
+		}
+		const wchar_t* pwszTemp = wsProvider.c_str();
 		pwszProviderName = (wchar_t *)(pwszTemp);
 
-		EVT_HANDLE hProviderNameMetadata = EvtOpenPublisherMetadata(NULL, pwszProviderName, NULL, 0, 0);
-
-		//XML
-		pwszXmlMessage = GetMessageString(hProviderNameMetadata, hEvent, EvtFormatMessageXml);
 		if (pwszXmlMessage)
 		{
 			//计算机（Computer）
-			std::wstring wsComputer = xmlInfo.GetXmlInfo(pwszXmlMessage, "COMPUTER");
-			jsonValue["Computer"] = stringConvert.WStringToString(wsComputer.c_str());
+			std::wstring wsComputer = m_xmlInfo.GetXmlInfo(pwszXmlMessage, "COMPUTER");
+			jsonValue["Computer"] = m_stringConvert.WStringToString(wsComputer.c_str());
 
 			//事件ID（EventID）
-			std::wstring wsEventID = xmlInfo.GetXmlInfo(pwszXmlMessage, "EVENTID");
-			jsonValue["EventID"] = stringConvert.WStringToString(wsEventID.c_str());
+			std::wstring wsEventID = m_xmlInfo.GetXmlInfo(pwszXmlMessage, "EVENTID");
+			jsonValue["EventID"] = m_stringConvert.WStringToString(wsEventID.c_str());
 
 			//来源（Provider）
-			std::wstring wsProvider = xmlInfo.GetXmlInfo(pwszXmlMessage, "PROVIDERNAME");
-			jsonValue["ProviderName"] = stringConvert.WStringToString(wsProvider.c_str());
+			jsonValue["ProviderName"] = m_stringConvert.WStringToString(wsProvider.c_str());
 
 			//用户（UserID）
-			std::wstring wsUserID = xmlInfo.GetXmlInfo(pwszXmlMessage, "USERID");
+			std::wstring wsUserID = m_xmlInfo.GetXmlInfo(pwszXmlMessage, "USERID");
 			if (wsUserID != L"")
 			{
 				ConvertStringSidToSidW(wsUserID.c_str(), &pSid);
@@ -106,17 +108,19 @@ std::vector<Json::Value> eventLog::GetDifferentType(LPWSTR pwszPath)
 			jsonValue["UserID"] = sUserName;
 
 			//记录时间（TimeCreated）
-			std::wstring wsTimeCreated = xmlInfo.GetXmlInfo(pwszXmlMessage, "TIMECREATED");
-			jsonValue["TimeCreated"] = stringConvert.WStringToString(wsTimeCreated.c_str());
+			std::wstring wsTimeCreated = m_xmlInfo.GetXmlInfo(pwszXmlMessage, "TIMECREATED");
+			jsonValue["TimeCreated"] = m_stringConvert.WStringToString(wsTimeCreated.c_str());
 
 			free(pwszXmlMessage);
 			pwszXmlMessage = NULL;
 		}
 
+		EVT_HANDLE hProviderNameMetadata = EvtOpenPublisherMetadata(NULL, pwszProviderName, NULL, 0, 0);
+		//操作信息（Message）
 		pwszMessage = GetMessageString(hProviderNameMetadata, hEvent, EvtFormatMessageEvent);
 		if (pwszMessage)
 		{
-			jsonValue["EventMessage"] = stringConvert.ConvertLPWSTRToStr(pwszMessage);
+			jsonValue["EventMessage"] = m_stringConvert.ConvertLPWSTRToStr(pwszMessage);
 			free(pwszMessage);
 			pwszMessage = NULL;
 		}
@@ -125,7 +129,7 @@ std::vector<Json::Value> eventLog::GetDifferentType(LPWSTR pwszPath)
 		pwszMessage = GetMessageString(hProviderNameMetadata, hEvent, EvtFormatMessageLevel);
 		if (pwszMessage)
 		{
-			jsonValue["Level"] = stringConvert.ConvertLPWSTRToStr(pwszMessage);;
+			jsonValue["Level"] = m_stringConvert.ConvertLPWSTRToStr(pwszMessage);;
 			free(pwszMessage);
 			pwszMessage = NULL;
 		}
@@ -134,7 +138,7 @@ std::vector<Json::Value> eventLog::GetDifferentType(LPWSTR pwszPath)
 		pwszMessage = GetMessageString(hProviderNameMetadata, hEvent, EvtFormatMessageOpcode);
 		if (pwszMessage)
 		{
-			jsonValue["Opcode"] = stringConvert.ConvertLPWSTRToStr(pwszMessage);;
+			jsonValue["Opcode"] = m_stringConvert.ConvertLPWSTRToStr(pwszMessage);;
 			free(pwszMessage);
 			pwszMessage = NULL;
 		}
@@ -143,7 +147,7 @@ std::vector<Json::Value> eventLog::GetDifferentType(LPWSTR pwszPath)
 		pwszMessage = GetMessageString(hProviderNameMetadata, hEvent, EvtFormatMessageKeyword);
 		if (pwszMessage)
 		{
-			jsonValue["keyword"] = stringConvert.ConvertLPWSTRToStr(pwszMessage);;
+			jsonValue["keyword"] = m_stringConvert.ConvertLPWSTRToStr(pwszMessage);;
 			free(pwszMessage);
 			pwszMessage = NULL;
 		}
@@ -158,7 +162,7 @@ std::vector<Json::Value> eventLog::GetDifferentType(LPWSTR pwszPath)
 			EvtClose(hProviderNameMetadata);
 		}
 
-		vecJsonInfos.push_back(jsonValue);
+		vecJsonInfo.push_back(jsonValue);
 	}
 
 cleanup:
@@ -171,27 +175,6 @@ cleanup:
 	{
 		EvtClose(hProviderMetadata);
 	}
-
-	return vecJsonInfos;
-}
-
-std::wstring eventLog::GetProviderName(EVT_HANDLE hProviderMetadata, EVT_HANDLE hEvent)
-{
-	xmlParse xmlInfo;
-
-	std::wstring swProviderName; //提供程序名（Provider）
-
-	LPWSTR pwszMessage = NULL; //获取信息（XML）
-
-	pwszMessage = GetMessageString(hProviderMetadata, hEvent, EvtFormatMessageXml);
-	if (pwszMessage)
-	{
-		swProviderName = xmlInfo.GetXmlInfo(pwszMessage, "PROVIDERNAME");
-		free(pwszMessage);
-		pwszMessage = NULL;
-	}
-
-	return swProviderName;
 }
 
 //从事件中获取指定的消息字符串。如果事件不包含指定的消息，则函数返回NULL。

@@ -4,11 +4,12 @@
 #include "Observer.h"
 #include <string>
 
+class Subject;
+
 class WriteFileObserver :public Observer
 {
 public:
 	void setJson(std::string sJsonInfoSet);
-	std::string getJson();
 	void dealJson();
 };
 

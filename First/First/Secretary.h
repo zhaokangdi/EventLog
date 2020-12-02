@@ -11,10 +11,10 @@
 class Secretary :public Subject
 {
 public:
-	Json::Value getJson(LPWSTR pwszPath);
-	std::string getAllTypeJson();
+	//std::string getTime();
+
+	void getJson(LPWSTR pwszPath, Json::Value &jsonValue);
 	void attach(Observer *pObserver);
-	void detach(Observer *pObserver);
 	void notify();
 };
 

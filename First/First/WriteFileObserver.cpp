@@ -4,14 +4,11 @@
 #include <stdio.h>
 #include <string>
 
+#include "Secretary.h"
+
 void WriteFileObserver::setJson(std::string sJsonInfoSet)
 {
 	sJsonInfo = sJsonInfoSet;
-}
-
-std::string WriteFileObserver::getJson()
-{
-	return sJsonInfo;
 }
 
 void WriteFileObserver::dealJson()
@@ -21,7 +18,7 @@ void WriteFileObserver::dealJson()
 	FILE *pOutFile = NULL; //ÎÄ¼þÖ¸Õë
 	fopen_s(&pOutFile, "WriteFileObserver.txt", "w,ccs=UTF-8");
 
-	std::string sWriteFileInfo = getJson();
+	std::string sWriteFileInfo = sJsonInfo;
 	int iLen = 0;
 	int iLength = (int)sWriteFileInfo.length() + 1;
 	iLen = MultiByteToWideChar(CP_ACP, 0, sWriteFileInfo.c_str(), iLength, 0, 0);

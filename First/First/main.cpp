@@ -5,23 +5,28 @@
 #include "WriteFileObserver.h"
 #include "ConsolePrintObserver.h"
 
+#include <iostream>
+
 void main()
 {
-	Subject *pSubject = new Secretary(); //创建观察者
+	Subject *m_pSubject = new Secretary(); //创建观察者
 
 	//被观察的对象
-	WriteFileObserver *pWriteFile = new WriteFileObserver();
-	ConsolePrintObserver *pConsolePrint = new ConsolePrintObserver();
+	WriteFileObserver *m_pWriteFile = new WriteFileObserver();
+	ConsolePrintObserver *m_pConsolePrint = new ConsolePrintObserver();
 
 	//加入观察队列
-	pSubject->attach(pWriteFile);
-	pSubject->attach(pConsolePrint);
+	m_pSubject->attach(m_pWriteFile);
+	m_pSubject->attach(m_pConsolePrint);
 
-	pSubject->notify(); //将JSON信息通知到被观察对象
+	//Secretary m_secretaryTemp;
+	//std::cout << "notify之前的时间" << m_secretaryTemp.getTime() << std::endl;
+	//通知消息
+	m_pSubject->notify();
+	//std::cout << "notify之后的时间" << m_secretaryTemp.getTime() << std::endl;
 
-	//被观察对象分别执行
-	pWriteFile->dealJson();
-	pConsolePrint->dealJson();
+	m_pWriteFile->dealJson();
+	m_pConsolePrint->dealJson();
 
 	system("pause");
 }

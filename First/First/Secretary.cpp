@@ -2,37 +2,36 @@
 #include "evnetLog.h"
 #include "stringConversion.h"
 
-Json::Value Secretary::getJson(LPWSTR pwszPath)
+/*
+#include <time.h>
+#include <stdio.h>
+#include <iostream>
+#pragma warning(disable:4996)
+std::string Secretary::getTime()
 {
-	eventLog eventLogs;
-	std::vector<Json::Value> vecJsonInfos = eventLogs.GetDifferentType(pwszPath);
-	Json::Value jsonValue;
+	time_t rawtime;
+	struct tm * timeinfo;
+	char buffer[128];
+
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+
+	strftime(buffer, sizeof(buffer), "Now is %Y/%m/%d %H:%M:%S", timeinfo);
+	return buffer;
+}
+*/
+
+void Secretary::getJson(LPWSTR pwszPath, Json::Value &jsonValue)
+{
+	eventLog m_eventLogs;
+
+	std::vector<Json::Value> vecJsonInfos;
+	m_eventLogs.GetDifferentType(pwszPath, vecJsonInfos);
 
 	for (unsigned int i = vecJsonInfos.size(); i > 0; i--)
 	{
 		jsonValue.append(vecJsonInfos[i - 1]);
 	}
-
-	return jsonValue;
-}
-
-std::string Secretary::getAllTypeJson()
-{
-	stringConversion stringConvert;
-
-	Json::Value root;
-	Json::Value Application = getJson(L"Application");
-	//Json::Value Security = getJson(L"Security");
-	//Json::Value Setup = getJson(L"Setup");
-	//Json::Value System = getJson(L"System");
-
-	root["Application"] = Json::Value(Application);
-	//root["Security"] = Json::Value(Security);
-	//root["Setup"] = Json::Value(Setup);
-	//root["System"] = Json::Value(System);
-
-	std::string sResult = stringConvert.json_to_string(root);
-	return sResult;
 }
 
 void Secretary::attach(Observer *pObserver)
@@ -40,25 +39,40 @@ void Secretary::attach(Observer *pObserver)
 	pListObservers.push_back(pObserver);
 }
 
-void Secretary::detach(Observer *pObserver)
-{
-	std::list<Observer *>::iterator iter = pListObservers.begin();
-	while (iter != pListObservers.end())
-	{
-		if ((*iter) == pObserver)
-		{
-			pListObservers.erase(iter);
-		}
-		++iter;
-	}
-}
-
 void Secretary::notify()
 {
+	stringConversion m_stringConvert;
+
+	Json::Value root;
+	Json::Value Application;
+	Json::Value Security;
+	Json::Value Setup;
+	Json::Value System;
+
+	//std::cout << "得到信息之前的时间" << getTime() << std::endl;
+	getJson(L"Application", Application); //36s+得到结果的时间
+	getJson(L"Security", Security); //50s+得到结果的时间
+	getJson(L"Setup", Setup);
+	getJson(L"System", System); //16s+得到结果的时间
+	//std::cout << "得到信息之后的时间" << getTime() << std::endl;
+
+	//std::cout << "加入root之前的时间" << getTime() << std::endl;
+	root["Application"] = Json::Value(Application); //7s，不可避免
+	root["Security"] = Json::Value(Security); //15s
+	root["Setup"] = Json::Value(Setup);
+	root["System"] = Json::Value(System); //3s
+	//std::cout << "加入root之后的时间" << getTime() << std::endl;
+
+	//std::cout << "转string之前的时间" << getTime() << std::endl;
+	std::string sResult = m_stringConvert.json_to_string(root);
+	//std::cout << "转string之前的时间" << getTime() << std::endl;
+
 	std::list<Observer *>::iterator iter = pListObservers.begin();
 	while (iter != pListObservers.end())
 	{
-		(*iter)->setJson(getAllTypeJson());
+		(*iter)->setJson(sResult);
 		++iter;
 	}
+
+	//std::cout << "函数结束后的时间" << getTime() << std::endl; //json处理53s
 }

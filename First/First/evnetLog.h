@@ -11,9 +11,8 @@
 class eventLog
 {
 public:
-	std::vector<Json::Value> GetDifferentType(LPWSTR pwszPath);
+	void GetDifferentType(LPWSTR pwszPath, std::vector<Json::Value> &vecJsonInfo);
 	void WriteFile(std::vector<std::string>* pvecJsonInfos, FILE* pOutFile);
-	std::wstring GetProviderName(EVT_HANDLE hProviderMetadata, EVT_HANDLE hEvent);
 	LPWSTR GetMessageString(EVT_HANDLE hMetadata, EVT_HANDLE hEvent, EVT_FORMAT_MESSAGE_FLAGS FormatId);
 };
 

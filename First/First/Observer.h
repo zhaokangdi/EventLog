@@ -10,7 +10,6 @@ protected:
 
 public:
 	virtual void setJson(std::string sJsonInfoSet) = 0;
-	virtual std::string getJson() = 0;
 	virtual void dealJson() = 0;
 };
 

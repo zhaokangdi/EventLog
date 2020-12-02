@@ -5,6 +5,8 @@
 #include <list>
 #include <string>
 
+class Observer;
+
 class Subject
 {
 protected:
@@ -13,7 +15,6 @@ protected:
 public:
 	std::string sJsonInfo;
 	virtual void attach(Observer *) = 0;
-	virtual void detach(Observer *) = 0;
 	virtual void notify() = 0;
 };
 
