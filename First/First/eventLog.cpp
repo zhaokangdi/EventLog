@@ -70,12 +70,8 @@ void eventLog::GetDifferentType(LPWSTR pwszPath, std::vector<Json::Value> &vecJs
 
 		LPWSTR pwszMessage = NULL;
 		LPWSTR pwszXmlMessage = NULL;
-		LPWSTR pwszProviderName = NULL;
+		std::wstring wsMessage;
 		std::wstring wsProvider;
-		std::wstring wsComputer;
-		std::wstring wsEventID;
-		std::wstring wsUserID;
-		std::wstring wsTimeCreated;
 
 		tinyxml2::XMLDocument doc;
 		tinyxml2::XMLElement* attributeApproachRoot = NULL;
@@ -119,22 +115,21 @@ void eventLog::GetDifferentType(LPWSTR pwszPath, std::vector<Json::Value> &vecJs
 
 		//来源（Provider）
 		wsProvider = GetXmlStringAttribute(attributeApproachElement, "Provider", "Name");
-		pwszProviderName = (wchar_t *)(wsProvider.c_str());
 		jsonValue["ProviderName"] = WStringToString(wsProvider.c_str());
 
 		//计算机（Computer）
-		wsComputer = GetXmlText(attributeApproachElement, "Computer");
-		jsonValue["Computer"] = WStringToString(wsComputer.c_str());
+		wsMessage = GetXmlText(attributeApproachElement, "Computer");
+		jsonValue["Computer"] = WStringToString(wsMessage.c_str());
 
 		//事件ID（EventID）
-		wsEventID = GetXmlText(attributeApproachElement, "EventID");
-		jsonValue["EventID"] = WStringToString(wsEventID.c_str());
+		wsMessage = GetXmlText(attributeApproachElement, "EventID");
+		jsonValue["EventID"] = WStringToString(wsMessage.c_str());
 
 		//用户（UserID）
-		wsUserID = GetXmlStringAttribute(attributeApproachElement, "Security", "UserID");
-		if (wsUserID != L"")
+		wsMessage = GetXmlStringAttribute(attributeApproachElement, "Security", "UserID");
+		if (wsMessage != L"")
 		{
-			ConvertStringSidToSidW(wsUserID.c_str(), &pSid);
+			ConvertStringSidToSidW(wsMessage.c_str(), &pSid);
 			LookupAccountSid(NULL, pSid, szUserName, &dwSize, szDomain, &dwSize, &SidType);
 			sUserName = szUserName;
 			if (pSid)
@@ -145,13 +140,13 @@ void eventLog::GetDifferentType(LPWSTR pwszPath, std::vector<Json::Value> &vecJs
 		jsonValue["UserID"] = sUserName;
 
 		//记录时间（TimeCreated）
-		wsTimeCreated = GetXmlStringAttribute(attributeApproachElement, "TimeCreated", "SystemTime");
-		jsonValue["TimeCreated"] = WStringToString(wsTimeCreated.c_str());
+		wsMessage = GetXmlStringAttribute(attributeApproachElement, "TimeCreated", "SystemTime");
+		jsonValue["TimeCreated"] = WStringToString(wsMessage.c_str());
 
 		free(pwszXmlMessage);
 		pwszXmlMessage = NULL;
 
-		EVT_HANDLE hProviderNameMetadata = EvtOpenPublisherMetadata(NULL, pwszProviderName, NULL, 0, 0);
+		EVT_HANDLE hProviderNameMetadata = EvtOpenPublisherMetadata(NULL, wsProvider.c_str(), NULL, 0, 0);
 		//操作信息（Message）
 		pwszMessage = GetMessageString(hProviderNameMetadata, hEvent, EvtFormatMessageEvent);
 		if (pwszMessage != NULL)
@@ -373,39 +368,6 @@ LPWSTR eventLog::GetMessageString(EVT_HANDLE hMetadata, EVT_HANDLE hEvent, EVT_F
 	if (!EvtFormatMessage(hMetadata, hEvent, 0, 0, NULL, FormatId, dwBufferSize, pwszBuffer, &dwBufferUsed))
 	{
 		dwStatus = GetLastError();
-		if (ERROR_INSUFFICIENT_BUFFER == dwStatus)
-		{
-			if ((EvtFormatMessageKeyword == FormatId))
-			{
-				pwszBuffer[dwBufferSize - 1] = L'\0';
-			}
-			else
-			{
-				dwBufferSize = dwBufferUsed;
-			}
-
-			pwszBuffer = (LPWSTR)malloc(dwBufferSize * sizeof(WCHAR));
-			if (pwszBuffer)
-			{
-				EvtFormatMessage(hMetadata, hEvent, 0, 0, NULL, FormatId, dwBufferSize, pwszBuffer, &dwBufferUsed);
-				if ((EvtFormatMessageKeyword == FormatId))
-				{
-					pwszBuffer[dwBufferUsed - 1] = L'\0';
-				}
-			}
-			else
-			{
-				wprintf(L"Malloc failure\n");
-			}
-		}
-		else if (ERROR_EVT_MESSAGE_NOT_FOUND == dwStatus || ERROR_EVT_MESSAGE_ID_NOT_FOUND == dwStatus)
-		{
-
-		}
-		else
-		{
-
-		}
 	}
 
 	return pwszBuffer;
