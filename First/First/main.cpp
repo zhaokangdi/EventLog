@@ -24,10 +24,24 @@ void main()
 
 		pWriteFile->dealJson();
 		pConsolePrint->dealJson();
-
-		pWriteFile = NULL;
-		pConsolePrint = NULL;
+	}
+	
+	if (pSecretary != NULL)
+	{
+		delete pSecretary;
 		pSecretary = NULL;
+	}
+
+	if (pWriteFile != NULL)
+	{
+		delete pWriteFile;
+		pWriteFile = NULL;
+	}
+
+	if (pConsolePrint != NULL)
+	{
+		delete pConsolePrint;
+		pConsolePrint = NULL;
 	}
 
 	system("pause");

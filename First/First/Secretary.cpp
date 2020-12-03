@@ -1,13 +1,6 @@
 #include "Secretary.h"
 #include "evnetLog.h"
 
-std::string Secretary::json_to_string(const Json::Value &value)
-{
-	Json::StyledWriter writer;
-	std::string sRewrite = writer.write(value);
-	return sRewrite;
-}
-
 void Secretary::getJson(LPWSTR pwszPath, Json::Value &jsonValue)
 {
 	if (pwszPath != NULL)
@@ -29,7 +22,6 @@ void Secretary::attach(Observer *pObserver)
 	if (pObserver != NULL)
 	{
 		m_pListObservers.push_back(pObserver);
-		pObserver = NULL;
 	}
 }
 
@@ -38,7 +30,6 @@ void Secretary::detach(Observer *pObserver)
 	if (pObserver != NULL)
 	{
 		m_pListObservers.remove(pObserver);
-		pObserver = NULL;
 	}
 }
 
@@ -50,15 +41,15 @@ void Secretary::notify()
 	Json::Value Setup;
 	Json::Value System;
 
-	getJson(L"Application", Application); //36s+得到结果的时间
-	getJson(L"Security", Security); //50s+得到结果的时间
+	getJson(L"Application", Application);
+	getJson(L"Security", Security);
 	getJson(L"Setup", Setup);
-	getJson(L"System", System); //16s+得到结果的时间
+	getJson(L"System", System);
 
-	root["Application"] = Json::Value(Application); //7s，不可避免
-	root["Security"] = Json::Value(Security); //15s
+	root["Application"] = Json::Value(Application);
+	root["Security"] = Json::Value(Security);
 	root["Setup"] = Json::Value(Setup);
-	root["System"] = Json::Value(System); //3s
+	root["System"] = Json::Value(System);
 
 	std::string sResult = json_to_string(root);
 
@@ -68,4 +59,11 @@ void Secretary::notify()
 		(*iter)->setJson(sResult);
 		++iter;
 	}
+}
+
+std::string Secretary::json_to_string(const Json::Value &value)
+{
+	Json::StyledWriter writer;
+	std::string sRewrite = writer.write(value);
+	return sRewrite;
 }

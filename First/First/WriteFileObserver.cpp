@@ -29,12 +29,12 @@ void WriteFileObserver::dealJson()
 	iLength = (int)m_sJsonInfo.length() + 1;
 	iLen = MultiByteToWideChar(CP_ACP, 0, m_sJsonInfo.c_str(), iLength, 0, 0);
 	pwszTemp = new wchar_t[iLen];
+	MultiByteToWideChar(CP_ACP, 0, m_sJsonInfo.c_str(), iLength, pwszTemp, iLen);
 	if (NULL == pwszTemp)
 	{
 		goto cleanup;
 	}
 
-	MultiByteToWideChar(CP_ACP, 0, m_sJsonInfo.c_str(), iLength, pwszTemp, iLen);
 	fwrite(pwszTemp, sizeof(wchar_t), wcslen(pwszTemp), pOutFile);
 
 cleanup:
