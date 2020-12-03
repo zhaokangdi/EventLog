@@ -363,12 +363,18 @@ LPWSTR eventLog::GetMessageString(EVT_HANDLE hMetadata, EVT_HANDLE hEvent, EVT_F
 
 	//∑÷≈‰ª∫≥Â«¯£®dwBufferSize * sizeof(WCHAR)£©
 	LPWSTR pwszBuffer = (LPWSTR)malloc(dwBufferSize * sizeof(WCHAR));
-	memset(pwszBuffer, 0, dwBufferSize * sizeof(WCHAR));
 
+	if (NULL == pwszBuffer)
+	{
+		goto cleanup;
+	}
+
+	memset(pwszBuffer, 0, dwBufferSize * sizeof(WCHAR));
 	if (!EvtFormatMessage(hMetadata, hEvent, 0, 0, NULL, FormatId, dwBufferSize, pwszBuffer, &dwBufferUsed))
 	{
 		dwStatus = GetLastError();
 	}
 
+cleanup:
 	return pwszBuffer;
 }
