@@ -228,12 +228,12 @@ std::string eventLog::ConvertLPWSTRToStr(LPWSTR pwszInput)
 		else
 		{
 			pszStr = new char[dwMinSize];
-			WideCharToMultiByte(CP_OEMCP, NULL, pwszInput, -1, pszStr, dwMinSize, NULL, FALSE);
 			if (NULL == pszStr)
 			{
 				goto cleanup;
 			}
 
+			WideCharToMultiByte(CP_OEMCP, NULL, pwszInput, -1, pszStr, dwMinSize, NULL, FALSE);
 			sOutput = pszStr;
 		}
 	}
@@ -258,13 +258,12 @@ std::wstring eventLog::ConvertLPCWSTRToWStr(const char* pszInput)
 	{
 		iLength = MultiByteToWideChar(CP_ACP, 0, pszInput, -1, NULL, 0);
 		pszBuf = new WCHAR[iLength + 1];
-		ZeroMemory(pszBuf, (iLength + 1) * sizeof(WCHAR));
-
 		if (NULL == pszBuf)
 		{
 			goto cleanup;
 		}
 
+		ZeroMemory(pszBuf, (iLength + 1) * sizeof(WCHAR));
 		MultiByteToWideChar(CP_ACP, 0, pszInput, -1, pszBuf, iLength);
 		wsOutput = pszBuf;
 	}
@@ -289,14 +288,13 @@ std::string eventLog::WStringToString(std::wstring wsInput)
 	if (iLen > 0)
 	{
 		pszBuff = new char[iLen + 1];
-		WideCharToMultiByte(CP_ACP, 0, wsInput.c_str(), wsInput.size(), pszBuff, iLen, NULL, NULL);
-		pszBuff[iLen] = '\0';
-
 		if (NULL == pszBuff)
 		{
 			goto cleanup;
 		}
 
+		WideCharToMultiByte(CP_ACP, 0, wsInput.c_str(), wsInput.size(), pszBuff, iLen, NULL, NULL);
+		pszBuff[iLen] = '\0';
 		sOutput.append(pszBuff);
 	}
 
