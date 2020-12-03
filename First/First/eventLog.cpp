@@ -72,6 +72,10 @@ void eventLog::GetDifferentType(LPWSTR pwszPath, std::vector<Json::Value> &vecJs
 		LPWSTR pwszXmlMessage = NULL;
 		LPWSTR pwszProviderName = NULL;
 		std::wstring wsProvider;
+		std::wstring wsComputer;
+		std::wstring wsEventID;
+		std::wstring wsUserID;
+		std::wstring wsTimeCreated;
 
 		tinyxml2::XMLDocument doc;
 		tinyxml2::XMLElement* attributeApproachRoot = NULL;
@@ -108,45 +112,44 @@ void eventLog::GetDifferentType(LPWSTR pwszPath, std::vector<Json::Value> &vecJs
 		}
 		
 		attributeApproachElement = attributeApproachRoot->FirstChildElement("System");
-		if (attributeApproachElement != NULL)
+		if (NULL == attributeApproachElement)
 		{
-			//ProviderName
-			wsProvider = GetXmlStringAttribute(attributeApproachElement, "Provider", "Name");
-			const wchar_t* pwszTemp = wsProvider.c_str();
-			pwszProviderName = (wchar_t *)(pwszTemp);
-
-			//计算机（Computer）
-			std::wstring wsComputer = GetXmlText(attributeApproachElement, "Computer");
-			jsonValue["Computer"] = WStringToString(wsComputer.c_str());
-
-			//事件ID（EventID）
-			std::wstring wsEventID = GetXmlText(attributeApproachElement, "EventID");
-			jsonValue["EventID"] = WStringToString(wsEventID.c_str());
-
-			//来源（Provider）
-			jsonValue["ProviderName"] = WStringToString(wsProvider.c_str());
-
-			//用户（UserID）
-			std::wstring wsUserID = GetXmlStringAttribute(attributeApproachElement, "Security", "UserID");
-			if (wsUserID != L"")
-			{
-				ConvertStringSidToSidW(wsUserID.c_str(), &pSid);
-				LookupAccountSid(NULL, pSid, szUserName, &dwSize, szDomain, &dwSize, &SidType);
-				sUserName = szUserName;
-				if (pSid)
-				{
-					pSid = NULL;
-				}
-			}
-			jsonValue["UserID"] = sUserName;
-
-			//记录时间（TimeCreated）
-			std::wstring wsTimeCreated = GetXmlStringAttribute(attributeApproachElement, "TimeCreated", "SystemTime");
-			jsonValue["TimeCreated"] = WStringToString(wsTimeCreated.c_str());
-
-			free(pwszXmlMessage);
-			pwszXmlMessage = NULL;
+			goto whileCleanup;
 		}
+
+		//来源（Provider）
+		wsProvider = GetXmlStringAttribute(attributeApproachElement, "Provider", "Name");
+		pwszProviderName = (wchar_t *)(wsProvider.c_str());
+		jsonValue["ProviderName"] = WStringToString(wsProvider.c_str());
+
+		//计算机（Computer）
+		wsComputer = GetXmlText(attributeApproachElement, "Computer");
+		jsonValue["Computer"] = WStringToString(wsComputer.c_str());
+
+		//事件ID（EventID）
+		wsEventID = GetXmlText(attributeApproachElement, "EventID");
+		jsonValue["EventID"] = WStringToString(wsEventID.c_str());
+
+		//用户（UserID）
+		wsUserID = GetXmlStringAttribute(attributeApproachElement, "Security", "UserID");
+		if (wsUserID != L"")
+		{
+			ConvertStringSidToSidW(wsUserID.c_str(), &pSid);
+			LookupAccountSid(NULL, pSid, szUserName, &dwSize, szDomain, &dwSize, &SidType);
+			sUserName = szUserName;
+			if (pSid)
+			{
+				pSid = NULL;
+			}
+		}
+		jsonValue["UserID"] = sUserName;
+
+		//记录时间（TimeCreated）
+		wsTimeCreated = GetXmlStringAttribute(attributeApproachElement, "TimeCreated", "SystemTime");
+		jsonValue["TimeCreated"] = WStringToString(wsTimeCreated.c_str());
+
+		free(pwszXmlMessage);
+		pwszXmlMessage = NULL;
 
 		EVT_HANDLE hProviderNameMetadata = EvtOpenPublisherMetadata(NULL, pwszProviderName, NULL, 0, 0);
 		//操作信息（Message）
