@@ -1,5 +1,4 @@
 #include "evnetLog.h"
-#include "tinyxml2.h"
 #include <windows.h>
 #include <iostream>
 #include <winevt.h>
@@ -20,6 +19,11 @@ std::string eventLog::ConvertLPWSTRToStr(LPWSTR pwszInput)
 	DWORD dwMinSize = 0;
 	LPSTR pszStr = NULL;
 
+	if (NULL == pwszInput)
+	{
+		goto cleanup;
+	}
+
 	dwMinSize = WideCharToMultiByte(CP_OEMCP, NULL, pwszInput, -1, NULL, 0, NULL, FALSE);
 	if (0 == dwMinSize)
 	{
@@ -31,17 +35,46 @@ std::string eventLog::ConvertLPWSTRToStr(LPWSTR pwszInput)
 	sOutput = pszStr;
 	delete[] pszStr;
 
+cleanup:
+	pwszInput = NULL;
+
 	return sOutput;
 }
 
 std::wstring eventLog::ConvertLPCWSTRToWStr(const char* pszInput)
 {
-	int iLength = MultiByteToWideChar(CP_ACP, 0, pszInput, -1, NULL, 0);
-	WCHAR* pszBuf = new WCHAR[iLength + 1];
+	int iLength = 0;
+	WCHAR* pszBuf = NULL;
+	std::wstring wsOutput;
+
+	if (NULL == pszInput)
+	{
+		goto cleanup;
+	}
+
+	iLength = MultiByteToWideChar(CP_ACP, 0, pszInput, -1, NULL, 0);
+	pszBuf = new WCHAR[iLength + 1];
+
+	if (NULL == pszBuf)
+	{
+		goto cleanup;
+	}
+
 	ZeroMemory(pszBuf, (iLength + 1) * sizeof(WCHAR));
 	MultiByteToWideChar(CP_ACP, 0, pszInput, -1, pszBuf, iLength);
-	std::wstring wsOutput(pszBuf);
-	delete[] pszBuf;
+	wsOutput = pszBuf;
+
+cleanup:
+	if (pszBuf != NULL)
+	{
+		delete[] pszBuf;
+	}
+
+	if (pszInput != NULL)
+	{
+		pszInput = NULL;
+	}
+
 	return wsOutput;
 }
 
@@ -60,100 +93,50 @@ std::string eventLog::WStringToString(std::wstring wsInput)
 	return sOutput;
 }
 
-std::wstring eventLog::GetXmlInfo(LPWSTR pwszMessage, std::string sInfoType)
+std::wstring eventLog::GetXmlStringAttribute(tinyxml2::XMLElement* pAttributeApproachRoot, const char* szXmlElement, const char* szAttribute)
 {
-	tinyxml2::XMLElement* attributeApproachRoot = NULL;
-	tinyxml2::XMLElement* attributeApproachElement = NULL;
 	const char* pwszInfo = NULL;
-	const char* pwszXml = NULL;
-	std::wstring wsResult = L" ";
+	std::wstring wsResult;
 
-	//获取XML信息
-	std::string sTemp = ConvertLPWSTRToStr(pwszMessage);
-	pwszXml = sTemp.data();
-	tinyxml2::XMLDocument doc;
-	doc.Parse(pwszXml);
-
-	attributeApproachRoot = doc.FirstChildElement("Event");
-	if (attributeApproachRoot)
+	if (pAttributeApproachRoot != NULL)
 	{
-		attributeApproachElement = attributeApproachRoot->FirstChildElement("System");
-		if (attributeApproachElement)
+		tinyxml2::XMLElement* attributeElement = pAttributeApproachRoot->FirstChildElement(szXmlElement);
+		if (attributeElement)
 		{
-			if ("PROVIDERNAME" == sInfoType)
-			{
-				tinyxml2::XMLElement* attributeProviderNameElement = attributeApproachElement->FirstChildElement("Provider");
-				if (attributeProviderNameElement)
-				{
-					attributeProviderNameElement->QueryStringAttribute("Name", &pwszInfo);
-					attributeProviderNameElement = NULL;
-				}
-			}
-			else if ("COMPUTER" == sInfoType)
-			{
-				tinyxml2::XMLElement* attributeComputerElement = attributeApproachElement->FirstChildElement("Computer");
-				if (attributeComputerElement)
-				{
-					pwszInfo = attributeComputerElement->GetText();
-					attributeComputerElement = NULL;
-				}
-			}
-			else if ("EVENTID" == sInfoType)
-			{
-				tinyxml2::XMLElement* attributeEventIDElement = attributeApproachElement->FirstChildElement("EventID");
-				if (attributeEventIDElement)
-				{
-					pwszInfo = attributeEventIDElement->GetText();
-					attributeEventIDElement = NULL;
-				}
-			}
-			else if ("USERID" == sInfoType)
-			{
-				tinyxml2::XMLElement* attributeUserIDElement = attributeApproachElement->FirstChildElement("Security");
-				if (attributeUserIDElement)
-				{
-					attributeUserIDElement->QueryStringAttribute("UserID", &pwszInfo);
-					attributeUserIDElement = NULL;
-				}
-			}
-			else if ("TIMECREATED" == sInfoType)
-			{
-				tinyxml2::XMLElement* attributeTimeCreatedElement = attributeApproachElement->FirstChildElement("TimeCreated");
-				if (attributeTimeCreatedElement)
-				{
-					attributeTimeCreatedElement->QueryStringAttribute("SystemTime", &pwszInfo);
-					attributeTimeCreatedElement = NULL;
-				}
-			}
-			else
-			{
-				pwszInfo = "Wrong type of information required\n";
-			}
+			attributeElement->QueryStringAttribute(szAttribute, &pwszInfo);
+			attributeElement = NULL;
 		}
-		else
+
+		if (pwszInfo != NULL)
 		{
-			std::cout << "Parse failure\n" << std::endl;
+			wsResult = ConvertLPCWSTRToWStr(pwszInfo);
+			pwszInfo = NULL;
 		}
 	}
-	else
+
+	return wsResult;
+}
+
+std::wstring eventLog::GetXmlText(tinyxml2::XMLElement* pAttributeApproachRoot, const char* szXmlElement)
+{
+	const char* pwszInfo = NULL;
+	std::wstring wsResult;
+
+	if (pAttributeApproachRoot != NULL)
 	{
-		std::cout << "Parse failure\n" << std::endl;
+		tinyxml2::XMLElement* attributeElement = pAttributeApproachRoot->FirstChildElement(szXmlElement);
+		if (attributeElement != NULL)
+		{
+			pwszInfo = attributeElement->GetText();
+			attributeElement = NULL;
+		}
+
+		if (pwszInfo != NULL)
+		{
+			wsResult = ConvertLPCWSTRToWStr(pwszInfo);
+			pwszInfo = NULL;
+		}
 	}
-
-	wsResult = ConvertLPCWSTRToWStr(pwszInfo);
-
-	if (attributeApproachElement)
-	{
-		attributeApproachElement = NULL;
-	}
-
-	if (attributeApproachRoot)
-	{
-		attributeApproachRoot = NULL;
-	}
-
-	pwszInfo = NULL;
-	pwszXml = NULL;
 
 	return wsResult;
 }
@@ -165,7 +148,11 @@ void eventLog::GetDifferentType(LPWSTR pwszPath, std::vector<Json::Value> &vecJs
 	EVT_HANDLE hEvent = NULL;
 	DWORD dwStatus = ERROR_SUCCESS;
 	DWORD dwReturned = 0;
-	LPWSTR pwszMessage = NULL;
+
+	if (NULL == pwszPath)
+	{
+		goto cleanup;
+	}
 
 	//查询Channel事件句柄
 	hResults = EvtQuery(NULL, pwszPath, NULL, EvtQueryChannelPath);
@@ -192,116 +179,156 @@ void eventLog::GetDifferentType(LPWSTR pwszPath, std::vector<Json::Value> &vecJs
 		goto cleanup;
 	}
 
-	while (BOOL bEvtNextSignal = EvtNext(hResults, 1, &hEvent, INFINITE, 0, &dwReturned))
+	while (true)
 	{
-		Json::Value jsonValue;
+		BOOL bEvtNextSignal = EvtNext(hResults, 1, &hEvent, INFINITE, 0, &dwReturned);
 
-		LPWSTR pwszXmlMessage = NULL;
-		LPWSTR pwszProviderName = NULL;
-		std::wstring wsProvider = L"";
-
-		PSID pSid = NULL;
-		DWORD dwSize = MAX_NAME;
-		SID_NAME_USE SidType;
-		std::string sUserName = "";
-		char szUserName[MAX_NAME];
-		char szDomain[MAX_NAME];
-
-		//XML
-		pwszXmlMessage = GetMessageString(hProviderMetadata, hEvent, EvtFormatMessageXml);
-		if (pwszXmlMessage != NULL)
+		if (bEvtNextSignal)
 		{
-			//ProviderName
-			wsProvider = GetXmlInfo(pwszXmlMessage, "PROVIDERNAME");
-			const wchar_t* pwszTemp = wsProvider.c_str();
-			pwszProviderName = (wchar_t *)(pwszTemp);
+			Json::Value jsonValue;
 
-			//计算机（Computer）
-			std::wstring wsComputer = GetXmlInfo(pwszXmlMessage, "COMPUTER");
-			jsonValue["Computer"] = WStringToString(wsComputer.c_str());
+			LPWSTR pwszMessage = NULL;
+			LPWSTR pwszXmlMessage = NULL;
+			LPWSTR pwszProviderName = NULL;
+			std::wstring wsProvider = L"";
 
-			//事件ID（EventID）
-			std::wstring wsEventID = GetXmlInfo(pwszXmlMessage, "EVENTID");
-			jsonValue["EventID"] = WStringToString(wsEventID.c_str());
+			tinyxml2::XMLElement* attributeApproachRoot = NULL;
+			tinyxml2::XMLElement* attributeApproachElement = NULL;
+			const char* pwszXml = NULL;
+			tinyxml2::XMLDocument doc;
 
-			//来源（Provider）
-			jsonValue["ProviderName"] = WStringToString(wsProvider.c_str());
+			PSID pSid = NULL;
+			DWORD dwSize = MAX_NAME;
+			SID_NAME_USE SidType;
+			std::string sUserName = "";
+			char szUserName[MAX_NAME];
+			char szDomain[MAX_NAME];
 
-			//用户（UserID）
-			std::wstring wsUserID = GetXmlInfo(pwszXmlMessage, "USERID");
-			if (wsUserID != L"")
+			//XML
+			pwszXmlMessage = GetMessageString(hProviderMetadata, hEvent, EvtFormatMessageXml);
+			if (pwszXmlMessage != NULL)
 			{
-				ConvertStringSidToSidW(wsUserID.c_str(), &pSid);
-				LookupAccountSid(NULL, pSid, szUserName, &dwSize, szDomain, &dwSize, &SidType);
-				sUserName = szUserName;
-				if (pSid)
+				std::string sTemp = ConvertLPWSTRToStr(pwszXmlMessage);
+				pwszXml = sTemp.data();
+
+				if (pwszXml != NULL)
 				{
-					pSid = NULL;
+					doc.Parse(pwszXml);
+					attributeApproachRoot = doc.FirstChildElement("Event");
+
+					if (attributeApproachRoot != NULL)
+					{
+						attributeApproachElement = attributeApproachRoot->FirstChildElement("System");
+
+						if (attributeApproachElement != NULL)
+						{
+							//ProviderName
+							wsProvider = GetXmlStringAttribute(attributeApproachElement, "Provider", "Name");
+							const wchar_t* pwszTemp = wsProvider.c_str();
+							pwszProviderName = (wchar_t *)(pwszTemp);
+
+							//计算机（Computer）
+							std::wstring wsComputer = GetXmlText(attributeApproachElement, "Computer");
+							jsonValue["Computer"] = WStringToString(wsComputer.c_str());
+
+							//事件ID（EventID）
+							std::wstring wsEventID = GetXmlText(attributeApproachElement, "EventID");
+							jsonValue["EventID"] = WStringToString(wsEventID.c_str());
+
+							//来源（Provider）
+							jsonValue["ProviderName"] = WStringToString(wsProvider.c_str());
+
+							//用户（UserID）
+							std::wstring wsUserID = GetXmlStringAttribute(attributeApproachElement, "Security", "UserID");
+							if (wsUserID != L"")
+							{
+								ConvertStringSidToSidW(wsUserID.c_str(), &pSid);
+								LookupAccountSid(NULL, pSid, szUserName, &dwSize, szDomain, &dwSize, &SidType);
+								sUserName = szUserName;
+								if (pSid)
+								{
+									pSid = NULL;
+								}
+							}
+							jsonValue["UserID"] = sUserName;
+
+							//记录时间（TimeCreated）
+							std::wstring wsTimeCreated = GetXmlStringAttribute(attributeApproachElement, "TimeCreated", "SystemTime");
+							jsonValue["TimeCreated"] = WStringToString(wsTimeCreated.c_str());
+
+							pwszXml = NULL;
+							attributeApproachRoot = NULL;
+
+							free(pwszXmlMessage);
+							pwszXmlMessage = NULL;
+						}
+					}
 				}
 			}
-			jsonValue["UserID"] = sUserName;
 
-			//记录时间（TimeCreated）
-			std::wstring wsTimeCreated = GetXmlInfo(pwszXmlMessage, "TIMECREATED");
-			jsonValue["TimeCreated"] = WStringToString(wsTimeCreated.c_str());
+			EVT_HANDLE hProviderNameMetadata = EvtOpenPublisherMetadata(NULL, pwszProviderName, NULL, 0, 0);
+			//操作信息（Message）
+			pwszMessage = GetMessageString(hProviderNameMetadata, hEvent, EvtFormatMessageEvent);
+			if (pwszMessage != NULL)
+			{
+				jsonValue["EventMessage"] = ConvertLPWSTRToStr(pwszMessage);
+				free(pwszMessage);
+				pwszMessage = NULL;
+			}
 
-			free(pwszXmlMessage);
-			pwszXmlMessage = NULL;
+			//级别（Level）
+			pwszMessage = GetMessageString(hProviderNameMetadata, hEvent, EvtFormatMessageLevel);
+			if (pwszMessage != NULL)
+			{
+				jsonValue["Level"] = ConvertLPWSTRToStr(pwszMessage);;
+				free(pwszMessage);
+				pwszMessage = NULL;
+			}
+
+			//操作代码（Opcode）
+			pwszMessage = GetMessageString(hProviderNameMetadata, hEvent, EvtFormatMessageOpcode);
+			if (pwszMessage != NULL)
+			{
+				jsonValue["Opcode"] = ConvertLPWSTRToStr(pwszMessage);;
+				free(pwszMessage);
+				pwszMessage = NULL;
+			}
+
+			//关键字（Keyword）
+			pwszMessage = GetMessageString(hProviderNameMetadata, hEvent, EvtFormatMessageKeyword);
+			if (pwszMessage != NULL)
+			{
+				jsonValue["keyword"] = ConvertLPWSTRToStr(pwszMessage);;
+				free(pwszMessage);
+				pwszMessage = NULL;
+			}
+
+			if (hEvent)
+			{
+				EvtClose(hEvent);
+				hEvent = NULL;
+			}
+
+			if (hProviderNameMetadata)
+			{
+				EvtClose(hProviderNameMetadata);
+				hProviderNameMetadata = NULL;
+			}
+
+			vecJsonInfo.push_back(jsonValue);
 		}
-
-		EVT_HANDLE hProviderNameMetadata = EvtOpenPublisherMetadata(NULL, pwszProviderName, NULL, 0, 0);
-		//操作信息（Message）
-		pwszMessage = GetMessageString(hProviderNameMetadata, hEvent, EvtFormatMessageEvent);
-		if (pwszMessage != NULL)
+		else
 		{
-			jsonValue["EventMessage"] = ConvertLPWSTRToStr(pwszMessage);
-			free(pwszMessage);
-			pwszMessage = NULL;
+			break;
 		}
-
-		//级别（Level）
-		pwszMessage = GetMessageString(hProviderNameMetadata, hEvent, EvtFormatMessageLevel);
-		if (pwszMessage != NULL)
-		{
-			jsonValue["Level"] = ConvertLPWSTRToStr(pwszMessage);;
-			free(pwszMessage);
-			pwszMessage = NULL;
-		}
-
-		//操作代码（Opcode）
-		pwszMessage = GetMessageString(hProviderNameMetadata, hEvent, EvtFormatMessageOpcode);
-		if (pwszMessage != NULL)
-		{
-			jsonValue["Opcode"] = ConvertLPWSTRToStr(pwszMessage);;
-			free(pwszMessage);
-			pwszMessage = NULL;
-		}
-
-		//关键字（Keyword）
-		pwszMessage = GetMessageString(hProviderNameMetadata, hEvent, EvtFormatMessageKeyword);
-		if (pwszMessage != NULL)
-		{
-			jsonValue["keyword"] = ConvertLPWSTRToStr(pwszMessage);;
-			free(pwszMessage);
-			pwszMessage = NULL;
-		}
-
-		if (hEvent)
-		{
-			EvtClose(hEvent);
-			hEvent = NULL;
-		}
-
-		if (hProviderNameMetadata)
-		{
-			EvtClose(hProviderNameMetadata);
-			hProviderNameMetadata = NULL;
-		}
-
-		vecJsonInfo.push_back(jsonValue);
 	}
 
 cleanup:
+	if (pwszPath)
+	{
+		pwszPath = NULL;
+	}
+
 	if (hResults)
 	{
 		EvtClose(hResults);

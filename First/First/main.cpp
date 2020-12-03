@@ -19,11 +19,8 @@ void main()
 		pSecretary->attach(pWriteFile);
 		pSecretary->attach(pConsolePrint);
 
-		//Secretary m_secretaryTemp;
-		//std::cout << "notify之前的时间" << m_secretaryTemp.getTime() << std::endl;
 		//通知消息
 		pSecretary->notify();
-		//std::cout << "notify之后的时间" << m_secretaryTemp.getTime() << std::endl;
 
 		pWriteFile->dealJson();
 		pConsolePrint->dealJson();

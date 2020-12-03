@@ -4,31 +4,42 @@
 std::string Secretary::json_to_string(const Json::Value &value)
 {
 	Json::StyledWriter writer;
-	std::string rewrite = writer.write(value);
-	return rewrite;
+	std::string sRewrite = writer.write(value);
+	return sRewrite;
 }
 
 void Secretary::getJson(LPWSTR pwszPath, Json::Value &jsonValue)
 {
-	eventLog m_eventLogs;
-
-	std::vector<Json::Value> vecJsonInfos;
-	m_eventLogs.GetDifferentType(pwszPath, vecJsonInfos);
-
-	for (unsigned int i = vecJsonInfos.size(); i > 0; i--)
+	if (pwszPath != NULL)
 	{
-		jsonValue.append(vecJsonInfos[i - 1]);
+		eventLog eventLogs;
+
+		std::vector<Json::Value> vecJsonInfos;
+		eventLogs.GetDifferentType(pwszPath, vecJsonInfos);
+
+		for (unsigned int i = vecJsonInfos.size(); i > 0; i--)
+		{
+			jsonValue.append(vecJsonInfos[i - 1]);
+		}
 	}
 }
 
 void Secretary::attach(Observer *pObserver)
 {
-	m_pListObservers.push_back(pObserver);
+	if (pObserver != NULL)
+	{
+		m_pListObservers.push_back(pObserver);
+		pObserver = NULL;
+	}
 }
 
 void Secretary::detach(Observer *pObserver)
 {
-	m_pListObservers.remove(pObserver);
+	if (pObserver != NULL)
+	{
+		m_pListObservers.remove(pObserver);
+		pObserver = NULL;
+	}
 }
 
 void Secretary::notify()
